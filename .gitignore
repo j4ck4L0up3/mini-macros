@@ -1,0 +1,7 @@
+bin
+tmp
+*.db
+tailwindcss
+.env
+.infisical.json
+node_modules

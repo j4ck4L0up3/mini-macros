@@ -1,0 +1,39 @@
+services:
+  app:
+    container_name: mini-macros-app
+    build: ./src/app
+    ports:
+      - 4000:4000
+    environment:
+      - INFISICAL_MACHINE_ID_CLIENT_ID=${INFISICAL_MACHINE_ID_CLIENT_ID_APP}
+      - INFISICAL_MACHINE_ID_CLIENT_SECRET=${INFISICAL_MACHINE_ID_CLIENT_SECRET_APP}
+    depends_on:
+      - database
+
+  database:
+    container_name: mini-macros-db
+    restart: always
+    shm_size: 128mB
+    environment:
+      - INFISICAL_MACHINE_ID_CLIENT_ID=${INFISICAL_MACHINE_ID_CLIENT_ID_DB}
+      - INFISICAL_MACHINE_ID_CLIENT_SECRET=${INFISICAL_MACHINE_ID_CLIENT_SECRET_DB}
+
+  proxy:
+    container_name: mini-macros-proxy
+    build:
+      context: ./web_server
+      dockerfile: ./web_server/Dockerfile
+    environment:
+      - RESOLVER=127.0.0.11
+      - SERVER=localhost
+      - SSL_CERTIFICATE_VERIFICATION=off
+    volumes:
+      - type: bind
+        source: ./web_server/proxy/mini-macros.conf
+        target: /etc/nginx/sites-enabled/mini-macros.conf
+        read_only: true
+    ports:
+      - 8080:8080
+      - 80:80
+    depends_on:
+      - app
