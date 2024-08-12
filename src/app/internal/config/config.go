@@ -6,7 +6,7 @@ type DsnConfig struct {
 	Host         string `envconfig:"GO_DB_HOST"     default:"localhost"`
 	User         string `envconfig:"GO_DB_USER"     default:"postgres"`
 	Password     string `envconfig:"GO_DB_PASSWORD" default:"postgres"`
-	DatabaseName string `envconfig:"GO_DB_NAME"     default:"test.db"`
+	DatabaseName string `envconfig:"GO_DB_NAME"     default:"test"`
 	Port         string `envconfig:"GO_DB_PORT"     default:"5432"`
 }
 

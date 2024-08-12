@@ -20,6 +20,7 @@ func open(dsn string) (*gorm.DB, error) {
 
 func MustOpen(dsn string) *gorm.DB {
 
+	// FIXME: this will have to be changed
 	if dsn == "" {
 		dsn = "test.db"
 	}
