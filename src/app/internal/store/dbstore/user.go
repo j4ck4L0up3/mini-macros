@@ -24,7 +24,7 @@ func NewUserStore(params NewUserStoreParams) *UserStore {
 	}
 }
 
-// TODO: add additional interface methods (see store.go)
+// TODO: add tests to mock.go for additional methods
 
 func (s *UserStore) CreateUser(fname, lname, email, password string) error {
 

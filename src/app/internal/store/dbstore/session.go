@@ -31,6 +31,7 @@ func (s *SessionStore) CreateSession(session *store.Session) (*store.Session, er
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return session, nil
 }
 

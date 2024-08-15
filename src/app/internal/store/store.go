@@ -47,7 +47,7 @@ type UserStore interface {
 	SetInactive(userID uint) error
 }
 
-// TODO: implement MacroStore methods
+// TODO: create macro.go & implement MacroStore methods
 type MacroStore interface {
 	CreateMacro(name, content string) error
 	GetAllMacrosFromUser(userID string) ([]*Macro, error)
@@ -61,4 +61,8 @@ type MacroStore interface {
 type SessionStore interface {
 	CreateSession(session *Session) (*Session, error)
 	GetUserFromSession(sessionID, userID string) (*User, error)
+}
+
+// TODO: set PasswordResetTokenStore methods
+type PasswordResetTokenStore interface {
 }

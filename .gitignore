@@ -5,3 +5,6 @@ tailwindcss
 .env
 .infisical.json
 node_modules
+secrets/
+database/scripts/.env
+src/app/dev.env

@@ -1,27 +1,43 @@
 package config
 
-import "github.com/kelseyhightower/envconfig"
-
-type DsnConfig struct {
-	Host         string `envconfig:"GO_DB_HOST"     default:"localhost"`
-	User         string `envconfig:"GO_DB_USER"     default:"postgres"`
-	Password     string `envconfig:"GO_DB_PASSWORD" default:"postgres"`
-	DatabaseName string `envconfig:"GO_DB_NAME"     default:"test"`
-	Port         string `envconfig:"GO_DB_PORT"     default:"5432"`
-}
+import (
+	"fmt"
+	"os"
+)
 
 type Config struct {
-	Port              string `envconfig:"PORT"                default:"localhost:4000"`
-	SessionCookieName string `envconfig:"SESSION_COOKIE_NAME" default:"session"`
-	DsnConfig         DsnConfig
+	Port              string
+	SessionCookieName string
+	Dsn               string
+}
+
+func setDsn() string {
+	// TODO: setup for mysql
+	host := os.Getenv("POSTGRES_HOST")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DATABASE")
+	port := os.Getenv("POSTGRES_PORT")
+
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s database=%s port=%s sslmode=disable",
+		host,
+		user,
+		password,
+		dbname,
+		port,
+	)
+	return dsn
 }
 
 func loadConfig() (*Config, error) {
+
 	var cfg Config
-	err := envconfig.Process("", &cfg)
-	if err != nil {
-		return nil, err
-	}
+	dsn := setDsn()
+	cfg.Dsn = dsn
+	cfg.Port = "4000"
+	cfg.SessionCookieName = "session"
+
 	return &cfg, nil
 }
 

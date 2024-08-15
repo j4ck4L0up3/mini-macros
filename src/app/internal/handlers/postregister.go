@@ -23,10 +23,12 @@ func NewPostRegisterHandler(params PostRegisterHandlerParams) *PostRegisterHandl
 
 // TODO: setup cookie and redirect to dashboard after registering
 func (h *PostRegisterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fname := r.FormValue("first-name")
+	lname := r.FormValue("last-name")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	err := h.userStore.CreateUser(email, password)
+	err := h.userStore.CreateUser(fname, lname, email, password)
 
 	if err != nil {
 

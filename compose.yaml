@@ -1,39 +1,51 @@
+---
 services:
   app:
     container_name: mini-macros-app
-    build: ./src/app
+    # TODO: change build to github link (see Docker Reference/Compose file reference/Compose Build Specification/Attributes)
+    image: j4ck4L0up3/mini-macros-app:latest
+    build:
+      context: ./src/app
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./src/app/dev.env
     ports:
-      - 4000:4000
-    environment:
-      - INFISICAL_MACHINE_ID_CLIENT_ID=${INFISICAL_MACHINE_ID_CLIENT_ID_APP}
-      - INFISICAL_MACHINE_ID_CLIENT_SECRET=${INFISICAL_MACHINE_ID_CLIENT_SECRET_APP}
-    depends_on:
-      - database
+      - 8080:8080
+    volumes:
+      - ./src/app:/usr/src/app
+    networks:
+      - private
 
   database:
     container_name: mini-macros-db
+    image: postgres:16
+    # TODO: I actually don't know what restart does
     restart: always
+    # limit database c
     shm_size: 128mB
-    environment:
-      - INFISICAL_MACHINE_ID_CLIENT_ID=${INFISICAL_MACHINE_ID_CLIENT_ID_DB}
-      - INFISICAL_MACHINE_ID_CLIENT_SECRET=${INFISICAL_MACHINE_ID_CLIENT_SECRET_DB}
-
-  proxy:
-    container_name: mini-macros-proxy
-    build:
-      context: ./web_server
-      dockerfile: ./web_server/Dockerfile
-    environment:
-      - RESOLVER=127.0.0.11
-      - SERVER=localhost
-      - SSL_CERTIFICATE_VERIFICATION=off
+    # set volume to create persistent database
     volumes:
-      - type: bind
-        source: ./web_server/proxy/mini-macros.conf
-        target: /etc/nginx/sites-enabled/mini-macros.conf
-        read_only: true
+      - db-data:/var/lib/postgresql/data
+    secrets:
+      - db_password
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      ENV: development
+    env_file:
+      - ./database/scripts/.env
     ports:
-      - 8080:8080
-      - 80:80
-    depends_on:
-      - app
+      - 5432:5432
+    networks:
+      - private
+
+volumes:
+  db-data:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+networks:
+  private:
+    driver: bridge

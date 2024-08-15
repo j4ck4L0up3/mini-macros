@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"goth/internal/store"
@@ -20,9 +21,8 @@ func open(dsn string) (*gorm.DB, error) {
 
 func MustOpen(dsn string) *gorm.DB {
 
-	// FIXME: this will have to be changed
 	if dsn == "" {
-		dsn = "test.db"
+		panic(errors.New("No DSN found."))
 	}
 
 	db, err := open(dsn)
@@ -30,6 +30,7 @@ func MustOpen(dsn string) *gorm.DB {
 		panic(err)
 	}
 
+	// TODO: add additional stores (see store/store.go)
 	err = db.AutoMigrate(&store.User{}, &store.Session{})
 
 	if err != nil {

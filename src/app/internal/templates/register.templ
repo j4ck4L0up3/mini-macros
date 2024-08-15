@@ -5,12 +5,16 @@ templ RegisterPage() {
 		<h1>
 			Register an account
 		</h1>
-		<form
-			hx-post="/register"
-			hx-trigger="submit"
-			hx-target-401="#register-error"
-		>
+		<form hx-post="/register" hx-trigger="submit" hx-target-401="#register-error">
 			<div id="register-error"></div>
+			<div>
+				<label for="first-name">First Name:</label>
+				<input type="first-name" name="first-name" placeholder="John" required=""/>
+			</div>
+			<div>
+				<label for="last-name">Last Name:</label>
+				<input type="last-name" name="last-name" placeholder="Smith" required=""/>
+			</div>
 			<div>
 				<label for="email">Your email</label>
 				<input type="email" name="email" id="email" placeholder="name@company.com" required=""/>
@@ -34,7 +38,6 @@ templ RegisterSuccess() {
 	<h1>Registration successful</h1>
 	<p>Go to <a href="login">login</a></p>
 }
-
 
 templ RegisterError() {
 	<div>

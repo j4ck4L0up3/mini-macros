@@ -65,6 +65,8 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user.Active = true
+
 	userID := user.ID
 	sessionID := session.SessionID
 

@@ -1,0 +1,17 @@
+# app items
+node_modules
+# TODO: uncomment at prod
+# .air.toml
+# tmp/
+# Makefile
+
+# Git
+.gitignore
+.git
+
+# Docker
+.dockerignore
+Dockerfile
+Dockerfile.dev
+compose.yaml
+
