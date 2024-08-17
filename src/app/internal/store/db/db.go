@@ -2,8 +2,10 @@ package db
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 	"goth/internal/store"
 	"os"
 )
@@ -16,7 +18,32 @@ func open(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	schemaName := os.Getenv("DB_SCHEMA_NAME")
+
+	return gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   fmt.Sprint(schemaName + "."),
+			SingularTable: false,
+		},
+	})
+}
+
+// TODO: make a data structure to go through each table created in store.go
+func createTables(db *gorm.DB) error {
+	var err error
+	if !db.Migrator().HasTable(&store.User{}) {
+		err = db.Migrator().CreateTable(&store.User{})
+	}
+	if !db.Migrator().HasTable(&store.Session{}) {
+		err = db.Migrator().CreateTable(&store.Session{})
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func MustOpen(dsn string) *gorm.DB {
@@ -30,9 +57,7 @@ func MustOpen(dsn string) *gorm.DB {
 		panic(err)
 	}
 
-	// TODO: add additional stores (see store/store.go)
-	err = db.AutoMigrate(&store.User{}, &store.Session{})
-
+	err = createTables(db)
 	if err != nil {
 		panic(err)
 	}

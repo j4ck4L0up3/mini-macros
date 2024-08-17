@@ -10,8 +10,8 @@ type UserStoreMock struct {
 	mock.Mock
 }
 
-func (m *UserStoreMock) CreateUser(email string, password string) error {
-	args := m.Called(email, password)
+func (m *UserStoreMock) CreateUser(fname, lname, email, password string) error {
+	args := m.Called(fname, lname, email, password)
 
 	return args.Error(0)
 }
@@ -30,7 +30,10 @@ func (m *SessionStoreMock) CreateSession(session *store.Session) (*store.Session
 	return args.Get(0).(*store.Session), args.Error(1)
 }
 
-func (m *SessionStoreMock) GetUserFromSession(sessionID string, userID string) (*store.User, error) {
+func (m *SessionStoreMock) GetUserFromSession(
+	sessionID string,
+	userID string,
+) (*store.User, error) {
 	args := m.Called(sessionID, userID)
 	return args.Get(0).(*store.User), args.Error(1)
 }

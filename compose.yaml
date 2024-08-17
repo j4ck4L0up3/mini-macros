@@ -7,44 +7,50 @@ services:
     build:
       context: ./src/app
       dockerfile: Dockerfile.dev
-    env_file:
-      - ./src/app/dev.env
+    # TODO: change to 443 and have proxy route 8080 & 80 to that
     ports:
       - 8080:8080
     volumes:
       - ./src/app:/usr/src/app
+    environment:
+      - DB_SCHEMA_NAME=${DB_SCHEMA_NAME}
+      - DB_ADMIN_USER=${DB_ADMIN_USER}
+      - DB_ADMIN_PASSWORD=${DB_ADMIN_PASSWORD}
+      - SERVER_HOST=${SERVER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+      - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - private
 
   database:
     container_name: mini-macros-db
-    image: postgres:16
-    # TODO: I actually don't know what restart does
+    image: postgres:16.4
     restart: always
-    # limit database c
     shm_size: 128mB
-    # set volume to create persistent database
     volumes:
       - db-data:/var/lib/postgresql/data
-    secrets:
-      - db_password
     environment:
-      POSTGRES_DB: dev
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-      ENV: development
-    env_file:
-      - ./database/scripts/.env
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - private
 
 volumes:
   db-data:
-
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
 
 networks:
   private:

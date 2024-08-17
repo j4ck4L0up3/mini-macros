@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"errors"
-	//"goth/internal/config"
+	"goth/internal/config"
 	"goth/internal/handlers"
-	//"goth/internal/hash/passwordhash"
-	//database "goth/internal/store/db"
-	//"goth/internal/store/dbstore"
+	"goth/internal/hash/passwordhash"
+	database "goth/internal/store/db"
+	"goth/internal/store/dbstore"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,47 +25,47 @@ import (
 * Set to production at build time
 * used to determine what assets to load
  */
-var Environment = "development"
+var Environment string
 
 func init() {
-	os.Setenv("env", Environment)
+	Environment = os.Getenv("ENV")
 }
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	r := chi.NewRouter()
 
-	// cfg := config.MustLoadConfig()
+	cfg := config.MustLoadConfig()
 
-	// dsn := cfg.Dsn
+	dsn := cfg.Dsn
 
-	// db := database.MustOpen(dsn)
-	// passwordhash := passwordhash.NewHPasswordHash()
+	db := database.MustOpen(dsn)
+	passwordhash := passwordhash.NewHPasswordHash()
 
-	/* userStore := dbstore.NewUserStore(
+	userStore := dbstore.NewUserStore(
 		dbstore.NewUserStoreParams{
 			DB:           db,
 			PasswordHash: passwordhash,
 		},
-	) */
+	)
 
-	/* sessionStore := dbstore.NewSessionStore(
+	sessionStore := dbstore.NewSessionStore(
 		dbstore.NewSessionStoreParams{
 			DB: db,
 		},
-	) */
+	)
 
 	fileServer := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
-	//authMiddleware := m.NewAuthMiddleware(sessionStore, cfg.SessionCookieName)
+	authMiddleware := m.NewAuthMiddleware(sessionStore, cfg.SessionCookieName)
 
 	r.Group(func(r chi.Router) {
 		r.Use(
 			middleware.Logger,
 			m.TextHTMLMiddleware,
 			m.CSPMiddleware,
-			//authMiddleware.AddUserToContext,
+			authMiddleware.AddUserToContext,
 		)
 
 		r.NotFound(handlers.NewNotFoundHandler().ServeHTTP)
@@ -76,22 +76,22 @@ func main() {
 
 		r.Get("/register", handlers.NewGetRegisterHandler().ServeHTTP)
 
-		/* r.Post("/register", handlers.NewPostRegisterHandler(handlers.PostRegisterHandlerParams{
+		r.Post("/register", handlers.NewPostRegisterHandler(handlers.PostRegisterHandlerParams{
 			UserStore: userStore,
-		}).ServeHTTP) */
+		}).ServeHTTP)
 
 		r.Get("/login", handlers.NewGetLoginHandler().ServeHTTP)
-		/*
-			r.Post("/login", handlers.NewPostLoginHandler(handlers.PostLoginHandlerParams{
-				UserStore:         userStore,
-				SessionStore:      sessionStore,
-				PasswordHash:      passwordhash,
-				SessionCookieName: cfg.SessionCookieName,
-			}).ServeHTTP)
 
-			r.Post("/logout", handlers.NewPostLogoutHandler(handlers.PostLogoutHandlerParams{
-				SessionCookieName: cfg.SessionCookieName,
-			}).ServeHTTP) */
+		r.Post("/login", handlers.NewPostLoginHandler(handlers.PostLoginHandlerParams{
+			UserStore:         userStore,
+			SessionStore:      sessionStore,
+			PasswordHash:      passwordhash,
+			SessionCookieName: cfg.SessionCookieName,
+		}).ServeHTTP)
+
+		r.Post("/logout", handlers.NewPostLogoutHandler(handlers.PostLogoutHandlerParams{
+			SessionCookieName: cfg.SessionCookieName,
+		}).ServeHTTP)
 	})
 
 	killSig := make(chan os.Signal, 1)
@@ -99,7 +99,7 @@ func main() {
 	signal.Notify(killSig, os.Interrupt, syscall.SIGTERM)
 
 	srv := &http.Server{
-		Addr:    "0.0.0.0:8080", //Sprint(localhost, ":", cfg.Port),
+		Addr:    cfg.ServerAddr,
 		Handler: r,
 	}
 
@@ -116,9 +116,9 @@ func main() {
 
 	logger.Info(
 		"Server started",
-		slog.String("port", "8080"),
+		slog.String("server address", cfg.ServerAddr),
 		slog.String("env", Environment),
-	) // replace "8080" with cfg.Port
+	)
 	<-killSig
 
 	logger.Info("Shutting down server")
