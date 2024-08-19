@@ -40,6 +40,19 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userStore.GetUser(email)
 
+	lockoutDiff := user.LockoutDuration.Sub(time.Now())
+	noTime, err := time.ParseDuration("0m")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if lockoutDiff > noTime && user.LockedOut == true {
+		w.WriteHeader(http.StatusLocked)
+		c := templates.LockoutError()
+		c.Render(r.Context(), w)
+		return
+	}
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		c := templates.LoginError()
@@ -50,12 +63,14 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	passwordIsValid, err := h.passwordhash.ComparePasswordAndHash(password, user.Password)
 
 	if err != nil || !passwordIsValid {
+		h.userStore.IncrementLoginAttempts(user)
 		w.WriteHeader(http.StatusUnauthorized)
 		c := templates.LoginError()
 		c.Render(r.Context(), w)
 		return
 	}
 
+	h.userStore.ResetLoginAttempts(user)
 	session, err := h.sessionStore.CreateSession(&store.Session{
 		UserID: user.ID,
 	})

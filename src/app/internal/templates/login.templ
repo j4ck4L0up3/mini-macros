@@ -5,22 +5,12 @@ templ Login(title string) {
 		<h1>
 			Sign in to your account
 		</h1>
-		<form
-			hx-post="/login"
-			hx-trigger="submit"
-			hx-target-401="#login-error"
-		>
+		<form hx-post="/login" hx-trigger="submit" hx-target-401="#login-error" hx-target-423="#lockout-error">
 			<div id="login-error"></div>
+			<div id="lockout-error"></div>
 			<div>
 				<label for="email">Your email</label>
-				<input
-					type="email"
-					name="email"
-					id="email"
-					placeholder="name@company.com"
-					required=""
-					autocomplete="email"
-				/>
+				<input type="email" name="email" id="email" placeholder="name@company.com" required="" autocomplete="email"/>
 			</div>
 			<div>
 				<label for="password">Password</label>
@@ -46,4 +36,8 @@ templ Login(title string) {
 
 templ LoginError() {
 	<p>Invalid email or password</p>
+}
+
+templ LockoutError() {
+	<p>Your account is locked out for too many bad attempts. Please try again later.</p>
 }

@@ -26,7 +26,7 @@ func Login(title string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ext=\"response-targets\"><h1>Sign in to your account</h1><form hx-post=\"/login\" hx-trigger=\"submit\" hx-target-401=\"#login-error\"><div id=\"login-error\"></div><div><label for=\"email\">Your email</label> <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"name@company.com\" required=\"\" autocomplete=\"email\"></div><div><label for=\"password\">Password</label> <input type=\"password\" name=\"password\" id=\"password\" placeholder=\"••••••••\" required=\"\" autocomplete=\"current-password\"></div><button type=\"submit\">Sign in</button><p>Don’t have an account yet? <a href=\"/register\">Register</a></p></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ext=\"response-targets\"><h1>Sign in to your account</h1><form hx-post=\"/login\" hx-trigger=\"submit\" hx-target-401=\"#login-error\" hx-target-423=\"#lockout-error\"><div id=\"login-error\"></div><div id=\"lockout-error\"></div><div><label for=\"email\">Your email</label> <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"name@company.com\" required=\"\" autocomplete=\"email\"></div><div><label for=\"password\">Password</label> <input type=\"password\" name=\"password\" id=\"password\" placeholder=\"••••••••\" required=\"\" autocomplete=\"current-password\"></div><button type=\"submit\">Sign in</button><p>Don’t have an account yet? <a href=\"/register\">Register</a></p></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,6 +53,32 @@ func LoginError() templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Invalid email or password</p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func LockoutError() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Your account is locked out for too many bad attempts. Please try again later.</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

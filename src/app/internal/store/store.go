@@ -7,12 +7,15 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName  string `gorm:"size:64"  json:"first_name"`
-	LastName   string `gorm:"size:64"  json:"last_name"`
-	Email      string `gorm:"size:319" json:"email"`
-	Password   string `gorm:"size:256" json:"-"`
-	Active     bool   `                json:"active"`
-	MacroCount uint   `gorm:"size:16"  json:"macro_count"`
+	FirstName       string    `gorm:"size:64"  json:"first_name"`
+	LastName        string    `gorm:"size:64"  json:"last_name"`
+	Email           string    `gorm:"size:319" json:"email"`
+	Password        string    `gorm:"size:256" json:"-"`
+	Active          bool      `                json:"active"`
+	LoginAttempts   uint8     `gorm:"not null" json:"login_attempts"`
+	LockedOut       bool      `                json:"locked_out"`
+	LockoutDuration time.Time `                json:"lockout_duration"`
+	MacroCount      uint      `gorm:"size:16"  json:"macro_count"`
 }
 
 type Macro struct {
@@ -49,6 +52,10 @@ type UserStore interface {
 	DeleteUser(userID uint) error
 	SetIsActive(userID uint) error
 	SetInactive(userID uint) error
+	// TODO: add additional methods
+	IncrementLoginAttempts(user *User) error
+	ResetLoginAttempts(user *User) error
+	SetLockOut(user *User) error
 }
 
 // TODO: create macro.go & implement MacroStore methods

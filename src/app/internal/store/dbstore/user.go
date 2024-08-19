@@ -1,10 +1,10 @@
 package dbstore
 
 import (
+	"gorm.io/gorm"
 	"goth/internal/hash"
 	"goth/internal/store"
-
-	"gorm.io/gorm"
+	"time"
 )
 
 type UserStore struct {
@@ -131,6 +131,59 @@ func (s *UserStore) SetInactive(userID uint) error {
 
 	err := s.db.Model(&store.User{}).Where("id = ?", userID).Update("active", false).Error
 
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserStore) IncrementLoginAttempts(user *store.User) error {
+	if user.LoginAttempts >= 5 {
+		err := s.SetLockOut(user)
+		if err != nil {
+			return err
+		}
+	} else {
+		attempts := user.LoginAttempts + 1
+		err := s.db.Model(&store.User{}).Where("id = ?", user.ID).Update("login_attempts", attempts).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *UserStore) ResetLoginAttempts(user *store.User) error {
+	err := s.db.Model(&store.User{}).Where("id = ?", user.ID).Update("login_attempts", 0).Error
+	if err != nil {
+		return err
+	}
+
+	err = s.db.Model(&store.User{}).Where("id = ?", user.ID).Update("locked_out", false).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserStore) SetLockOut(user *store.User) error {
+	err := s.db.Model(&store.User{}).Where("id = ?", user.ID).Update("locked_out", true).Error
+	if err != nil {
+		return err
+	}
+
+	duration, err := time.ParseDuration("5m")
+	if err != nil {
+		return err
+	}
+
+	err = s.db.Model(&store.User{}).
+		Where("id = ?", user.ID).
+		Update("lockout_duration", time.Now().Add(duration)).
+		Error
 	if err != nil {
 		return err
 	}
