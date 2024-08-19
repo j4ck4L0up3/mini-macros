@@ -44,7 +44,7 @@ func (s *UserStore) CreateUser(fname, lname, email, password string) error {
 func (s *UserStore) GetUser(email string) (*store.User, error) {
 
 	var user store.User
-	err := s.db.Where("email = ?", email).First(&user).Error
+	err := s.db.Model(&store.User{}).Where("email = ?", email).First(&user).Error
 
 	if err != nil {
 		return nil, err
@@ -54,9 +54,7 @@ func (s *UserStore) GetUser(email string) (*store.User, error) {
 
 func (s *UserStore) UpdateUserFirstName(userID uint, fname string) error {
 
-	var user store.User
-	err := s.db.Where(&store.User{ID: userID, Active: true}).
-		First(&user).
+	err := s.db.Model(&store.User{}).Where("id = ? AND active = ?", userID, true).
 		Update("first_name", fname).
 		Error
 
@@ -69,9 +67,7 @@ func (s *UserStore) UpdateUserFirstName(userID uint, fname string) error {
 
 func (s *UserStore) UpdateUserLastName(userID uint, lname string) error {
 
-	var user store.User
-	err := s.db.Where(&store.User{ID: userID, Active: true}).
-		First(&user).
+	err := s.db.Model(&store.User{}).Where("id = ? AND active = ?", userID, true).
 		Update("last_name", lname).
 		Error
 
@@ -84,9 +80,7 @@ func (s *UserStore) UpdateUserLastName(userID uint, lname string) error {
 
 func (s *UserStore) UpdateUserEmail(userID uint, email string) error {
 
-	var user store.User
-	err := s.db.Where(&store.User{ID: userID, Active: true}).
-		First(&user).
+	err := s.db.Model(&store.User{}).Where("id = ? AND active = ?", userID, true).
 		Update("email", email).
 		Error
 
@@ -99,14 +93,16 @@ func (s *UserStore) UpdateUserEmail(userID uint, email string) error {
 
 func (s *UserStore) UpdateUserPassword(userID uint, password string) error {
 
-	var user store.User
 	hashedPassword, err := s.passwordhash.GenerateFromPassword(password)
 
 	if err != nil {
 		return err
 	}
 
-	return s.db.Where("id = ?", userID).First(&user).Update("password", hashedPassword).Error
+	return s.db.Model(&store.User{}).
+		Where("id = ?", userID).
+		Update("password", hashedPassword).
+		Error
 }
 
 func (s *UserStore) DeleteUser(userID uint) error {
@@ -122,8 +118,7 @@ func (s *UserStore) DeleteUser(userID uint) error {
 
 func (s *UserStore) SetIsActive(userID uint) error {
 
-	var user store.User
-	err := s.db.Where("id = ?", userID).First(&user).Update("active", true).Error
+	err := s.db.Model(&store.User{}).Where("id = ?", userID).Update("active", true).Error
 
 	if err != nil {
 		return err
@@ -134,8 +129,7 @@ func (s *UserStore) SetIsActive(userID uint) error {
 
 func (s *UserStore) SetInactive(userID uint) error {
 
-	var user store.User
-	err := s.db.Where("id = ?", userID).First(&user).Update("active", false).Error
+	err := s.db.Model(&store.User{}).Where("id = ?", userID).Update("active", false).Error
 
 	if err != nil {
 		return err

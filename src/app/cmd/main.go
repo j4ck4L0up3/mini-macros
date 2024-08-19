@@ -58,7 +58,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
-	authMiddleware := m.NewAuthMiddleware(sessionStore, cfg.SessionCookieName)
+	authMiddleware := m.NewAuthMiddleware(userStore, sessionStore, cfg.SessionCookieName)
 
 	r.Group(func(r chi.Router) {
 		r.Use(
@@ -91,6 +91,13 @@ func main() {
 
 		r.Post("/logout", handlers.NewPostLogoutHandler(handlers.PostLogoutHandlerParams{
 			SessionCookieName: cfg.SessionCookieName,
+			UserStore:         userStore,
+		}).ServeHTTP)
+
+		// FIXME: edit as completed
+		r.Get("/dashboard", handlers.NewGetDashboardHandler(handlers.GetDashboardHandlerParams{
+			SessionCookieName: cfg.SessionCookieName,
+			SessionStore:      sessionStore,
 		}).ServeHTTP)
 	})
 

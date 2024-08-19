@@ -65,10 +65,15 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Active = true
-
 	userID := user.ID
 	sessionID := session.SessionID
+
+	err = h.userStore.SetIsActive(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Printf("User could not be set active: %v\n", err)
+		return
+	}
 
 	cookieValue := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%d", sessionID, userID)))
 	// TODO: change cookie expiration

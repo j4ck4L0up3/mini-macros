@@ -9,6 +9,7 @@ import (
 	"goth/internal/store"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -49,11 +50,13 @@ func CSPMiddleware(next http.Handler) http.Handler {
 		// set nonces in context
 		ctx := context.WithValue(r.Context(), NonceKey, nonceSet)
 		// insert the nonces into the content security policy header
-		cspHeader := fmt.Sprintf("default-src 'self'; script-src 'nonce-%s' 'nonce-%s' ; style-src 'nonce-%s' '%s';",
+		cspHeader := fmt.Sprintf(
+			"default-src 'self'; script-src 'nonce-%s' 'nonce-%s' ; style-src 'nonce-%s' '%s';",
 			nonceSet.Htmx,
 			nonceSet.ResponseTargets,
 			nonceSet.Tw,
-			nonceSet.HtmxCSSHash)
+			nonceSet.HtmxCSSHash,
+		)
 		w.Header().Set("Content-Security-Policy", cspHeader)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -101,12 +104,18 @@ func GetTwNonce(ctx context.Context) string {
 }
 
 type AuthMiddleware struct {
+	userStore         store.UserStore
 	sessionStore      store.SessionStore
 	sessionCookieName string
 }
 
-func NewAuthMiddleware(sessionStore store.SessionStore, sessionCookieName string) *AuthMiddleware {
+func NewAuthMiddleware(
+	userStore store.UserStore,
+	sessionStore store.SessionStore,
+	sessionCookieName string,
+) *AuthMiddleware {
 	return &AuthMiddleware{
+		userStore:         userStore,
 		sessionStore:      sessionStore,
 		sessionCookieName: sessionCookieName,
 	}
@@ -142,12 +151,12 @@ func (m *AuthMiddleware) AddUserToContext(next http.Handler) http.Handler {
 		}
 
 		sessionID := splitValue[0]
-		userID := splitValue[1]
+		userIDStr := splitValue[1]
 
 		fmt.Println("sessionID", sessionID)
-		fmt.Println("userID", userID)
+		fmt.Println("userID", userIDStr)
 
-		user, err := m.sessionStore.GetUserFromSession(sessionID, userID)
+		user, err := m.sessionStore.GetUserFromSession(sessionID, userIDStr)
 
 		if err != nil {
 			next.ServeHTTP(w, r)
@@ -155,6 +164,18 @@ func (m *AuthMiddleware) AddUserToContext(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), UserKey, user)
+
+		userID, err := strconv.Atoi(userIDStr)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		err = m.userStore.SetIsActive(uint(userID))
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

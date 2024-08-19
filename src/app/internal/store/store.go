@@ -1,40 +1,42 @@
 package store
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
-// TODO: update anything that includes User
 type User struct {
-	ID         uint   `gorm:"primaryKey;size:256;not null" json:"id"`
-	FirstName  string `gorm:"size:64"                      json:"first_name"`
-	LastName   string `gorm:"size:64"                      json:"last_name"`
-	Email      string `gorm:"size:319"                     json:"email"`
-	Password   string `gorm:"size:256"                     json:"-"`
-	Active     bool   `                                    json:"active"`
-	MacroCount uint   `gorm:"size:16"                      json:"macro_count"`
+	gorm.Model
+	FirstName  string `gorm:"size:64"  json:"first_name"`
+	LastName   string `gorm:"size:64"  json:"last_name"`
+	Email      string `gorm:"size:319" json:"email"`
+	Password   string `gorm:"size:256" json:"-"`
+	Active     bool   `                json:"active"`
+	MacroCount uint   `gorm:"size:16"  json:"macro_count"`
 }
 
 type Macro struct {
-	ID      uint   `gorm:"primaryKey;size:64;not null" json:"id"`
-	MacroID string `gorm:"not null;unique"             json:"macro_id"`
-	Name    string `gorm:"size:64"                     json:"name"`
-	Content string `gorm:"not null"                    json:"content"`
-	UserID  uint   `gorm:"not null"                    json:"user_id"`
-	User    User   `gorm:"foreignKey:UserID"           json:"user"`
+	gorm.Model
+	MacroID string `gorm:"not null;unique"   json:"macro_id"`
+	Name    string `gorm:"size:64"           json:"name"`
+	Content string `gorm:"not null"          json:"content"`
+	UserID  uint   `gorm:"not null"          json:"user_id"`
+	User    User   `gorm:"foreignKey:UserID" json:"user"`
 }
 
 type Session struct {
-	ID        uint   `gorm:"primaryKey;not null" json:"id"`
-	SessionID string `gorm:"unique"              json:"session_id"`
-	UserID    uint   `gorm:"not null"            json:"user_id"`
-	User      User   `gorm:"foreignKey:UserID"   json:"user"`
+	gorm.Model
+	SessionID string `gorm:"unique"            json:"session_id"`
+	UserID    uint   `gorm:"not null"          json:"user_id"`
+	User      User   `gorm:"foreignKey:UserID" json:"user"`
 }
 
 type PasswordResetToken struct {
+	gorm.Model
 	UserID      uint      `gorm:"primaryKey;not null" json:"user_id"`
 	Token       string    `gorm:"unique;not null"     json:"token"`
 	TokenExpiry time.Time `gorm:"not null"            json:"token_expiry"`
+	User        User      `gorm:"foreignKey:UserID"   json:"user"`
 }
 
 type UserStore interface {

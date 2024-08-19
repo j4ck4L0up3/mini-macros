@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"goth/internal/middleware"
 	"goth/internal/store"
 	"goth/internal/templates"
@@ -23,18 +24,20 @@ func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		err := templates.Layout(c, "Mini Macros").Render(r.Context(), w)
 
 		if err != nil {
-			http.Error(w, "Error rendering template", http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Printf("Error rendering template: %v\n", err)
 			return
 		}
 
 		return
 	}
 
-	c := templates.Index(user.Email)
+	c := templates.Index(user.FirstName)
 	err := templates.Layout(c, "Mini Macros").Render(r.Context(), w)
 
 	if err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Printf("Error rendering template: %v\n", err)
 		return
 	}
 }
