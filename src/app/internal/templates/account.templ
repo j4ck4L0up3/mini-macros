@@ -1,0 +1,39 @@
+package templates
+
+// TODO: add "{items} do not match" error divs and templ component
+templ Account(email, fname, lname string) {
+<div>
+  <form>
+    <div>
+      <p id="curr-first-name">{ fname }</p>
+      <input id="new-first-name" type="text" placeholder="Change first name" />
+      <input id="reenter-new-first-name" type="text" placeholder="Re-enter first name" />
+      <button>Update</button>
+    </div>
+  </form>
+  <form>
+    <div>
+      <p id="curr-last-name">{ lname }</p>
+      <input id="new-last-name" type="text" placeholder="Change last name" />
+      <input id="reenter-new-last-name" type="text" placeholder="Re-enter last name" />
+      <button>Update</button>
+    </div>
+  </form>
+  <form>
+    <div>
+      <p id="curr-email">{ email }</p>
+      <input id="new-email" type="email" placeholder="New email" />
+      <input id="reenter-new-email" type="email" placeholder="Re-enter new email" />
+      <button>Update</button>
+    </div>
+  </form>
+  <form>
+    <div>
+      <input id="curr-password" type="password" placeholder="Current password" />
+      <input id="new-password" type="password" placeholder="New password" />
+      <input id="reenter-new-password" type="password" placeholder="Re-enter new password" />
+      <button>Update</button>
+    </div>
+  </form>
+</div>
+}

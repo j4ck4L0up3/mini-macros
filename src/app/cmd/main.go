@@ -94,6 +94,11 @@ func main() {
 			UserStore:         userStore,
 		}).ServeHTTP)
 
+		r.Get("/account", handlers.NewGetAccountHandler(handlers.GetAccountHandlerParams{
+			SessionStore:      sessionStore,
+			SessionCookieName: cfg.SessionCookieName,
+		}).ServeHTTP)
+
 		// FIXME: edit as completed
 		r.Get("/dashboard", handlers.NewGetDashboardHandler(handlers.GetDashboardHandlerParams{
 			SessionCookieName: cfg.SessionCookieName,

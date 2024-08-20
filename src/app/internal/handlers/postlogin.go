@@ -91,8 +91,7 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookieValue := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%d", sessionID, userID)))
-	// TODO: change cookie expiration
-	expiration := time.Now().Add(365 * 24 * time.Hour)
+	expiration := time.Now().Add(3 * time.Hour)
 	cookie := http.Cookie{
 		Name:     h.sessionCookieName,
 		Value:    cookieValue,

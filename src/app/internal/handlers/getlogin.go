@@ -19,4 +19,5 @@ func (h *GetLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
