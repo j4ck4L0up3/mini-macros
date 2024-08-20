@@ -6,7 +6,6 @@ import (
 	"goth/internal/store"
 	"goth/internal/templates"
 	"net/http"
-	"strings"
 )
 
 type GetDashboardHandler struct {
@@ -33,26 +32,21 @@ func (h *GetDashboardHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	valueBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
+	sessionBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Could not decode cookie value: %v , error: %v\n", currCookie.Value, err)
 		return
 	}
-	splitVals := strings.Split(string(valueBytes), ":")
 
-	sessionID := splitVals[0]
-	userID := splitVals[1]
+	sessionID := string(sessionBytes)
 
-	user, err := h.sessionStore.GetUserFromSession(sessionID, userID)
+	user, err := h.sessionStore.GetUserFromSession(sessionID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf(
-			"Could not extract user from session: %v\nsessionID: %v, userID: %v, user: %v",
+			"Could not extract user from session: %v\n",
 			err,
-			sessionID,
-			userID,
-			user,
 		)
 		return
 	}

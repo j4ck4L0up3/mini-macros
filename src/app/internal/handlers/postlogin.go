@@ -80,17 +80,14 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID
-	sessionID := session.SessionID
-
-	err = h.userStore.SetIsActive(userID)
+	err = h.userStore.SetIsActive(user.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("User could not be set active: %v\n", err)
 		return
 	}
 
-	cookieValue := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%d", sessionID, userID)))
+	cookieValue := b64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s", session.SessionID)))
 	expiration := time.Now().Add(3 * time.Hour)
 	cookie := http.Cookie{
 		Name:     h.sessionCookieName,
@@ -102,7 +99,6 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &cookie)
 
-	// TODO: redirect to /dashboard/{sessionEncoding} or something
-	w.Header().Set("HX-Redirect", "/")
+	w.Header().Set("HX-Redirect", "/dashboard")
 	w.WriteHeader(http.StatusOK)
 }

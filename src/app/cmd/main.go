@@ -91,6 +91,7 @@ func main() {
 
 		r.Post("/logout", handlers.NewPostLogoutHandler(handlers.PostLogoutHandlerParams{
 			SessionCookieName: cfg.SessionCookieName,
+			SessionStore:      sessionStore,
 			UserStore:         userStore,
 		}).ServeHTTP)
 

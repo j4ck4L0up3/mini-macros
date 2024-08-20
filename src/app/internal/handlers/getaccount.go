@@ -6,7 +6,6 @@ import (
 	"goth/internal/store"
 	"goth/internal/templates"
 	"net/http"
-	"strings"
 )
 
 type GetAccountHandler struct {
@@ -34,18 +33,16 @@ func (h *GetAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valueBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
+	sessionBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Could not decode cookie value: %v , error: %v\n", currCookie.Value, err)
 		return
 	}
-	splitVals := strings.Split(string(valueBytes), ":")
 
-	sessionID := splitVals[0]
-	userID := splitVals[1]
+	sessionID := string(sessionBytes)
 
-	user, err := h.sessionStore.GetUserFromSession(sessionID, userID)
+	user, err := h.sessionStore.GetUserFromSession(sessionID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Could not retrieve user from session: %v\n", err)

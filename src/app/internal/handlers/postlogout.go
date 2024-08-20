@@ -5,24 +5,25 @@ import (
 	"fmt"
 	"goth/internal/store"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 )
 
 type PostLogoutHandler struct {
 	sessionCookieName string
+	sessionStore      store.SessionStore
 	userStore         store.UserStore
 }
 
 type PostLogoutHandlerParams struct {
 	SessionCookieName string
+	SessionStore      store.SessionStore
 	UserStore         store.UserStore
 }
 
 func NewPostLogoutHandler(params PostLogoutHandlerParams) *PostLogoutHandler {
 	return &PostLogoutHandler{
 		sessionCookieName: params.SessionCookieName,
+		sessionStore:      params.SessionStore,
 		userStore:         params.UserStore,
 	}
 }
@@ -36,23 +37,16 @@ func (h *PostLogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valueBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
+	sessionBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Could not decode cookie value: %v , error: %v", currCookie.Value, err)
 		return
 	}
-	splitVals := strings.Split(string(valueBytes), ":")
+	sessionID := string(sessionBytes)
+	user, err := h.sessionStore.GetUserFromSession(sessionID)
 
-	userIDStr := splitVals[1]
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Printf("Could not convert userID into integer: %v", err)
-		return
-	}
-
-	err = h.userStore.SetInactive(uint(userID))
+	err = h.userStore.SetInactive(user.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("User could not be set inactive: %v", err)

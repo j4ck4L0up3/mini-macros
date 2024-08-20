@@ -9,8 +9,6 @@ import (
 	"goth/internal/store"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 )
 
 type key string
@@ -143,20 +141,11 @@ func (m *AuthMiddleware) AddUserToContext(next http.Handler) http.Handler {
 			return
 		}
 
-		splitValue := strings.Split(string(decodedValue), ":")
-
-		if len(splitValue) != 2 {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		sessionID := splitValue[0]
-		userIDStr := splitValue[1]
+		sessionID := string(decodedValue)
 
 		fmt.Println("sessionID", sessionID)
-		fmt.Println("userID", userIDStr)
 
-		user, err := m.sessionStore.GetUserFromSession(sessionID, userIDStr)
+		user, err := m.sessionStore.GetUserFromSession(sessionID)
 
 		if err != nil {
 			next.ServeHTTP(w, r)
@@ -165,13 +154,7 @@ func (m *AuthMiddleware) AddUserToContext(next http.Handler) http.Handler {
 
 		ctx := context.WithValue(r.Context(), UserKey, user)
 
-		userID, err := strconv.Atoi(userIDStr)
-		if err != nil {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		err = m.userStore.SetIsActive(uint(userID))
+		err = m.userStore.SetIsActive(user.ID)
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
