@@ -27,6 +27,7 @@ type Macro struct {
 	User    User   `gorm:"foreignKey:UserID" json:"user"`
 }
 
+// TODO: set sessions & password reset tokens to expire, also probably remove gorm.Model
 type Session struct {
 	gorm.Model
 	SessionID string `gorm:"unique"            json:"session_id"`
@@ -52,7 +53,6 @@ type UserStore interface {
 	DeleteUser(userID uint) error
 	SetIsActive(userID uint) error
 	SetInactive(userID uint) error
-	// TODO: add additional methods
 	IncrementLoginAttempts(user *User) error
 	ResetLoginAttempts(user *User) error
 	SetLockOut(user *User) error
@@ -68,7 +68,7 @@ type MacroStore interface {
 	DeleteMacro(macroID, userID string) error
 }
 
-// TODO: may need to add delete session or refresh session
+// TODO: add delete session, remove userID from GetUserFromSession
 type SessionStore interface {
 	CreateSession(session *Session) (*Session, error)
 	GetUserFromSession(sessionID, userID string) (*User, error)
