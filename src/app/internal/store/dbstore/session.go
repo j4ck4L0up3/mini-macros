@@ -36,6 +36,7 @@ func (s *SessionStore) CreateSession(session *store.Session) (*store.Session, er
 }
 
 func (s *SessionStore) GetUserFromSession(sessionID string) (*store.User, error) {
+
 	var session store.Session
 
 	err := s.db.Preload("User", func(db *gorm.DB) *gorm.DB {
@@ -51,4 +52,17 @@ func (s *SessionStore) GetUserFromSession(sessionID string) (*store.User, error)
 	}
 
 	return &session.User, nil
+}
+
+func (s *SessionStore) DeleteSession(sessionID string) error {
+
+	err := s.db.Model(&store.Session{}).
+		Where("session_id = ?", sessionID).
+		Delete(&store.Session{}).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

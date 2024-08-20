@@ -68,10 +68,11 @@ type MacroStore interface {
 	DeleteMacro(macroID, userID string) error
 }
 
-// TODO: add delete session, remove userID from GetUserFromSession
+// TODO: add delete session
 type SessionStore interface {
 	CreateSession(session *Session) (*Session, error)
 	GetUserFromSession(sessionID string) (*User, error)
+	DeleteSession(sessionID string) error
 }
 
 // TODO: set PasswordResetTokenStore methods

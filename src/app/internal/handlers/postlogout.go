@@ -40,7 +40,7 @@ func (h *PostLogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sessionBytes, err := b64.StdEncoding.DecodeString(currCookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Printf("Could not decode cookie value: %v , error: %v", currCookie.Value, err)
+		fmt.Printf("Could not decode cookie value: %v , error: %v\n", currCookie.Value, err)
 		return
 	}
 	sessionID := string(sessionBytes)
@@ -49,7 +49,7 @@ func (h *PostLogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = h.userStore.SetInactive(user.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Printf("User could not be set inactive: %v", err)
+		fmt.Printf("User could not be set inactive: %v\n", err)
 		return
 	}
 
@@ -59,6 +59,12 @@ func (h *PostLogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(-100 * time.Hour),
 		Path:    "/",
 	})
+
+	err = h.sessionStore.DeleteSession(sessionID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Printf("Error deleting session: %v\n", err)
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
