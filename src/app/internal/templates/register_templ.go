@@ -26,7 +26,7 @@ func RegisterPage() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ext=\"response-targets\"><h1>Register an account</h1><form hx-post=\"/register\" hx-trigger=\"submit\" hx-target-401=\"#register-error\"><div id=\"register-error\"></div><div><label for=\"first-name\">First Name:</label> <input type=\"first-name\" name=\"first-name\" placeholder=\"John\" required=\"\"></div><div><label for=\"last-name\">Last Name:</label> <input type=\"last-name\" name=\"last-name\" placeholder=\"Smith\" required=\"\"></div><div><label for=\"email\">Your email</label> <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"name@company.com\" required=\"\"></div><div><label for=\"password\">Password</label> <input type=\"password\" name=\"password\" id=\"password\" placeholder=\"••••••••\" required=\"\"></div><button type=\"submit\">Register</button><p>Already have an account? <a href=\"/login\">Login</a></p></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ext=\"response-targets\"><h1>Register an account</h1><form hx-post=\"/register\" hx-trigger=\"submit\" hx-target-406=\"#register-error\" hx-target-418=\"#password-match-error\"><div id=\"register-error\"></div><div><label for=\"first-name\">First Name:</label> <input type=\"first-name\" name=\"first-name\" placeholder=\"John\" required=\"\"></div><div><label for=\"last-name\">Last Name:</label> <input type=\"last-name\" name=\"last-name\" placeholder=\"Smith\" required=\"\"></div><div><label for=\"email\">Your email</label> <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"name@company.com\" required=\"\"></div><div><div id=\"password-match-error\"></div><label for=\"password\">Password</label> <input type=\"password\" name=\"password\" id=\"password\" placeholder=\"••••••••\" required=\"\"> <label for=\"reenter-password\">Password</label> <input type=\"password\" name=\"reenter-password\" id=\"reenter-password\" placeholder=\"••••••••\" required=\"\"></div><button type=\"submit\">Register</button><p>Already have an account? <a href=\"/login\">Login</a></p></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,6 +79,32 @@ func RegisterError() templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><h1>Registration failed</h1><p>There was an error registering your account</p></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func EmailInUseError() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>The email address provided is already associated with a user account.</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

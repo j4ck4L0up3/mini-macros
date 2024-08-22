@@ -101,7 +101,7 @@ func main() {
 		}).ServeHTTP)
 
 		r.Put(
-			"/account/first-name",
+			"/account",
 			handlers.NewPutFirstNameHandler(handlers.PutFirstNameHandlerParams{
 				SessionStore:      sessionStore,
 				UserStore:         userStore,
@@ -110,7 +110,7 @@ func main() {
 		)
 
 		r.Put(
-			"/account/last-name",
+			"/account",
 			handlers.NewPutLastNameHandler(handlers.PutLastNameHandlerParams{
 				SessionStore:      sessionStore,
 				UserStore:         userStore,
@@ -119,7 +119,7 @@ func main() {
 		)
 
 		r.Put(
-			"/account/email",
+			"/account",
 			handlers.NewPutEmailHandler(handlers.PutEmailHandlerParams{
 				SessionStore:      sessionStore,
 				UserStore:         userStore,
@@ -128,20 +128,11 @@ func main() {
 		)
 
 		r.Put(
-			"/account/password",
+			"/account",
 			handlers.NewPutPasswordHandler(handlers.PutPasswordHandlerParams{
 				SessionStore:      sessionStore,
 				UserStore:         userStore,
 				Passwordhash:      passwordhash,
-				SessionCookieName: cfg.SessionCookieName,
-			}).ServeHTTP,
-		)
-
-		r.Delete(
-			"/account/delete-account",
-			handlers.NewDeleteAccountHandler(handlers.DeleteAccountHandlerParams{
-				UserStore:         userStore,
-				SessionStore:      sessionStore,
 				SessionCookieName: cfg.SessionCookieName,
 			}).ServeHTTP,
 		)

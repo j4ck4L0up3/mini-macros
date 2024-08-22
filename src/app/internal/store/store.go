@@ -49,7 +49,7 @@ type UserStore interface {
 	UpdateUserFirstName(userID uint, fname string) error
 	UpdateUserLastName(userID uint, lname string) error
 	UpdateUserEmail(userID uint, email string) error
-	UpdateUserPassword(userID uint, passwordhash string) error
+	UpdateUserPassword(userID uint, password string) error
 	DeleteUser(userID uint) error
 	SetIsActive(userID uint) error
 	SetInactive(userID uint) error
@@ -68,7 +68,6 @@ type MacroStore interface {
 	DeleteMacro(macroID, userID string) error
 }
 
-// TODO: add delete session
 type SessionStore interface {
 	CreateSession(session *Session) (*Session, error)
 	GetUserFromSession(sessionID string) (*User, error)

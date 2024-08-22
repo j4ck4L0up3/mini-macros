@@ -1,39 +1,134 @@
 package templates
 
-// TODO: add "{items} do not match" error divs and templ component
 templ Account(email, fname, lname string) {
-<div>
-  <form>
-    <div>
-      <p id="curr-first-name">{ fname }</p>
-      <input id="new-first-name" type="text" placeholder="Change first name" />
-      <input id="reenter-new-first-name" type="text" placeholder="Re-enter first name" />
-      <button>Update</button>
-    </div>
-  </form>
-  <form>
-    <div>
-      <p id="curr-last-name">{ lname }</p>
-      <input id="new-last-name" type="text" placeholder="Change last name" />
-      <input id="reenter-new-last-name" type="text" placeholder="Re-enter last name" />
-      <button>Update</button>
-    </div>
-  </form>
-  <form>
-    <div>
-      <p id="curr-email">{ email }</p>
-      <input id="new-email" type="email" placeholder="New email" />
-      <input id="reenter-new-email" type="email" placeholder="Re-enter new email" />
-      <button>Update</button>
-    </div>
-  </form>
-  <form>
-    <div>
-      <input id="curr-password" type="password" placeholder="Current password" />
-      <input id="new-password" type="password" placeholder="New password" />
-      <input id="reenter-new-password" type="password" placeholder="Re-enter new password" />
-      <button>Update</button>
-    </div>
-  </form>
-</div>
+	<div hx-ext="response-targets">
+		<h1>Account Settings</h1>
+		<form
+			hx-put="/account/first-name"
+			hx-target-202="#fname-change-successful"
+			hx-target-406="#fname-update-error"
+			hx-target-5*="#fname-update-error"
+		>
+			<p id="curr-first-name">{ fname }</p>
+			<div id="fname-update-error"></div>
+			<div id="fname-change-successful"></div>
+			<input name="new-first-name" id="new-first-name" type="text" placeholder="Change first name"/>
+			<input name="reenter-new-first-name" id="reenter-new-first-name" type="text" placeholder="Re-enter first name"/>
+			<button type="submit">Update</button>
+		</form>
+		<form
+			hx-put="/account/last-name"
+			hx-target="#lname-change-successful"
+			hx-target-406="#lname-update-error"
+			hx-target-5*="#lname-update-error"
+		>
+			<p id="curr-last-name">{ lname }</p>
+			<div id="lname-update-error"></div>
+			<div id="lname-change-successful"></div>
+			<input name="new-last-name" id="new-last-name" type="text" placeholder="Change last name"/>
+			<input name="reenter-new-last-name" id="reenter-new-last-name" type="text" placeholder="Re-enter last name"/>
+			<button type="submit">Update</button>
+		</form>
+		<form
+			hx-put="/account/email"
+			hx-target="#email-change-successful"
+			hx-target-406="#email-update-error"
+			hx-target-5*="#email-update-error"
+		>
+			<p id="curr-email">{ email }</p>
+			<div id="email-update-error"></div>
+			<div id="email-change-successful"></div>
+			<input name="new-email" id="new-email" type="email" placeholder="New email"/>
+			<input name="reenter-new-email" id="reenter-new-email" type="email" placeholder="Re-enter new email"/>
+			<button type="submit">Update</button>
+			<div id="verify-email"></div>
+		</form>
+		<form
+			hx-put="/account/password"
+			hx-target="#password-change-successful"
+			hx-target-406="#password-update-error"
+			hx-target-5*="#password-update-error"
+		>
+			<div id="password-update-error"></div>
+			<div id="password-change-successful"></div>
+			<input name="curr-password" id="curr-password" type="password" placeholder="Current password"/>
+			<input name="new-password" id="new-password" type="password" placeholder="New password"/>
+			<input name="reenter-new-password" id="reenter-new-password" type="password" placeholder="Re-enter new password"/>
+			<button type="submit">Update</button>
+		</form>
+		<form
+			hx-delete="/account/delete-account"
+			hx-target-200="#delete-account-succes"
+			hx-target-5*="delete-error"
+			hx-confirm="Are you sure you want to delete your account?"
+		>
+			<button type="submit">Delete Account</button>
+			<div id="delete-error"></div>
+			<div id="delete-account-succes"></div>
+		</form>
+	</div>
+}
+
+templ FirstNameUpdateError() {
+	<p>Error updating first name. Please try again later.</p>
+}
+
+templ FirstNameMatchError() {
+	<p>Names do not match. Please try again.</p>
+}
+
+templ FirstNameChangeSuccess() {
+	<p>Your first name was updated successfully.</p>
+}
+
+templ LastNameUpdateError() {
+	<p>Error updating last name. Please try again later.</p>
+}
+
+templ LastNameMatchError() {
+	<p>Names do not match. Please try again.</p>
+}
+
+templ LastNameChangeSuccess() {
+	<p>Your last name was updated successfully.</p>
+}
+
+templ EmailVerificationMessage() {
+	<p>Verification email has been sent to your email address. Please click the link to verify your email.</p>
+}
+
+templ EmailUpdateError() {
+	<p>Error updating email. Please try again later.</p>
+}
+
+templ EmailMatchError() {
+	<p>Email addresses do not match. Please try again.</p>
+}
+
+templ EmailChangeSuccess() {
+	<p>Your email address was updated successfully.</p>
+}
+
+templ CurrentPasswordError() {
+	<p>The current password entered is incorrect.</p>
+}
+
+templ PasswordMatchError() {
+	<p>Passwords do not match. Please try again.</p>
+}
+
+templ PasswordUpdateError() {
+	<p>Error updating password. Please try again later.</p>
+}
+
+templ PasswordChangeSuccess() {
+	<p>Your password was updated successfully.</p>
+}
+
+templ DeleteAccountError() {
+	<p>Error deleting account. Please try again later.</p>
+}
+
+templ DeleteAccountSuccess() {
+	<p>Account has been deleted successfully.</p>
 }

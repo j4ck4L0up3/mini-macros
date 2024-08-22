@@ -107,7 +107,7 @@ func (s *UserStore) UpdateUserPassword(userID uint, password string) error {
 
 func (s *UserStore) DeleteUser(userID uint) error {
 
-	err := s.db.Delete(&store.User{}, userID).Error
+	err := s.db.Where("id = ?", userID).Delete(&store.User{}).Error
 
 	if err != nil {
 		return err

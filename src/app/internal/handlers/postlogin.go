@@ -39,6 +39,12 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	user, err := h.userStore.GetUser(email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		c := templates.LoginError()
+		c.Render(r.Context(), w)
+		return
+	}
 
 	lockoutDiff := user.LockoutDuration.Sub(time.Now())
 	noTime, err := time.ParseDuration("0m")
@@ -50,12 +56,6 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if lockoutDiff > noTime && user.LockedOut == true {
 		w.WriteHeader(http.StatusLocked)
 		c := templates.LockoutError()
-		c.Render(r.Context(), w)
-		return
-	}
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		c := templates.LoginError()
 		c.Render(r.Context(), w)
 		return
 	}
@@ -100,5 +100,5 @@ func (h *PostLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 
 	w.Header().Set("HX-Redirect", "/dashboard")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusAccepted)
 }

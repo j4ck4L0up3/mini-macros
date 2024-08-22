@@ -1,47 +1,54 @@
 package templates
 
 templ RegisterPage() {
-	<div hx-ext="response-targets">
-		<h1>
-			Register an account
-		</h1>
-		<form hx-post="/register" hx-trigger="submit" hx-target-401="#register-error">
-			<div id="register-error"></div>
-			<div>
-				<label for="first-name">First Name:</label>
-				<input type="first-name" name="first-name" placeholder="John" required=""/>
-			</div>
-			<div>
-				<label for="last-name">Last Name:</label>
-				<input type="last-name" name="last-name" placeholder="Smith" required=""/>
-			</div>
-			<div>
-				<label for="email">Your email</label>
-				<input type="email" name="email" id="email" placeholder="name@company.com" required=""/>
-			</div>
-			<div>
-				<label for="password">Password</label>
-				<input type="password" name="password" id="password" placeholder="••••••••" required=""/>
-			</div>
-			<button type="submit">
-				Register
-			</button>
-			<p>
-				Already have an account?
-				<a href="/login">Login</a>
-			</p>
-		</form>
-	</div>
+<div hx-ext="response-targets">
+  <h1>
+    Register an account
+  </h1>
+  <form hx-post="/register" hx-trigger="submit" hx-target-406="#register-error" hx-target-418="#password-match-error">
+    <div id="register-error"></div>
+    <div>
+      <label for="first-name">First Name:</label>
+      <input type="first-name" name="first-name" placeholder="John" required="" />
+    </div>
+    <div>
+      <label for="last-name">Last Name:</label>
+      <input type="last-name" name="last-name" placeholder="Smith" required="" />
+    </div>
+    <div>
+      <label for="email">Your email</label>
+      <input type="email" name="email" id="email" placeholder="name@company.com" required="" />
+    </div>
+    <div>
+      <div id="password-match-error"></div>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="••••••••" required="" />
+      <label for="reenter-password">Password</label>
+      <input type="password" name="reenter-password" id="reenter-password" placeholder="••••••••" required="" />
+    </div>
+    <button type="submit">
+      Register
+    </button>
+    <p>
+      Already have an account?
+      <a href="/login">Login</a>
+    </p>
+  </form>
+</div>
 }
 
 templ RegisterSuccess() {
-	<h1>Registration successful</h1>
-	<p>Go to <a href="login">login</a></p>
+<h1>Registration successful</h1>
+<p>Go to <a href="login">login</a></p>
 }
 
 templ RegisterError() {
-	<div>
-		<h1>Registration failed</h1>
-		<p>There was an error registering your account</p>
-	</div>
+<div>
+  <h1>Registration failed</h1>
+  <p>There was an error registering your account</p>
+</div>
+}
+
+templ EmailInUseError() {
+<p>The email address provided is already associated with a user account.</p>
 }
