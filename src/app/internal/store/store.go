@@ -5,23 +5,36 @@ import (
 	"time"
 )
 
+type Tables struct {
+	User               *User
+	Admin              *Admin
+	Macro              *Macro
+	Session            *Session
+	PasswordResetToken *PasswordResetToken
+}
+
 type User struct {
 	gorm.Model
 	FirstName       string    `gorm:"size:64"  json:"first_name"`
 	LastName        string    `gorm:"size:64"  json:"last_name"`
 	Email           string    `gorm:"size:319" json:"email"`
 	Password        string    `gorm:"size:256" json:"-"`
-	Active          bool      `                json:"active"`
+	Active          bool      `gorm:"not null" json:"active"`
 	LoginAttempts   uint8     `gorm:"not null" json:"login_attempts"`
 	LockedOut       bool      `                json:"locked_out"`
 	LockoutDuration time.Time `                json:"lockout_duration"`
 	MacroCount      uint      `gorm:"size:16"  json:"macro_count"`
 }
 
+type Admin struct {
+	User
+	Admin bool `gorm:"not null" json:"active"`
+}
+
 type Macro struct {
 	gorm.Model
 	MacroID string `gorm:"not null;unique"   json:"macro_id"`
-	Name    string `gorm:"size:64"           json:"name"`
+	Name    string `gorm:"size:64;index"     json:"name"`
 	Content string `gorm:"not null"          json:"content"`
 	UserID  uint   `gorm:"not null"          json:"user_id"`
 	User    User   `gorm:"foreignKey:UserID" json:"user"`
