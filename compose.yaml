@@ -22,6 +22,8 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
+      - NO_REPLY_EMAIL_ADDRESS=${NO_REPLY_EMAIL_ADDRESS}
+      - NO_REPLY_EMAIL_PASSWORD=${NO_REPLY_EMAIL_PASSWORD}
     depends_on:
       database:
         condition: service_healthy

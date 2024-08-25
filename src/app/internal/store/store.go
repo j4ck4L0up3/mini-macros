@@ -33,14 +33,14 @@ type Admin struct {
 
 type Macro struct {
 	gorm.Model
-	MacroID string `gorm:"not null;unique"   json:"macro_id"`
-	Name    string `gorm:"size:64;index"     json:"name"`
-	Content string `gorm:"not null"          json:"content"`
-	UserID  uint   `gorm:"not null"          json:"user_id"`
-	User    User   `gorm:"foreignKey:UserID" json:"user"`
+	MacroCookieID string `gorm:"not null;unique"   json:"macro_cookie_id"`
+	Name          string `gorm:"size:64;index"     json:"name"`
+	Content       string `gorm:"not null"          json:"content"`
+	ClickCount    uint   `gorm:"size:128"          json:"click_count"`
+	UserID        uint   `gorm:"not null"          json:"user_id"`
+	User          User   `gorm:"foreignKey:UserID" json:"user"`
 }
 
-// TODO: set sessions & password reset tokens to expire, also probably remove gorm.Model
 type Session struct {
 	gorm.Model
 	SessionID string `gorm:"unique"            json:"session_id"`
@@ -71,14 +71,14 @@ type UserStore interface {
 	SetLockOut(user *User) error
 }
 
-// TODO: create macro.go & implement MacroStore methods
 type MacroStore interface {
 	CreateMacro(name, content string) error
-	GetAllMacrosFromUser(userID string) ([]*Macro, error)
-	GetMacroFromName(name string) (*Macro, error)
-	UpdateMacroName(macroID, userID string) error
-	UpdateMacroContent(macroID, userID string) error
-	DeleteMacro(macroID, userID string) error
+	GetAllMacrosFromUser(userID uint) ([]*Macro, error)
+	GetMacrosFromQuery(query string) ([]*Macro, error)
+	UpdateMacroName(name string, macroID uint, userID uint) error
+	UpdateMacroContent(content string, macroID uint, userID uint) error
+	DeleteMacro(macroID, userID uint) error
+	IncrementClickCount(macroID, userID uint) error
 }
 
 type SessionStore interface {
